@@ -1,5 +1,6 @@
 // lib/presentation/screens/result/result_screen.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,8 +9,10 @@ import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
 import 'package:megapdf_flutter_client/core/error/error_handler.dart';
 import 'package:megapdf_flutter_client/core/utils/file_utils.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
+import 'package:megapdf_flutter_client/core/widgets/app_loading.dart';
 import 'package:megapdf_flutter_client/presentation/router/route_names.dart';
 import 'package:megapdf_flutter_client/presentation/widgets/result/download_card.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ResultScreen extends ConsumerStatefulWidget {
   final String operation;
@@ -31,6 +34,7 @@ class ResultScreen extends ConsumerStatefulWidget {
 
 class _ResultScreenState extends ConsumerState<ResultScreen> {
   bool _isDownloading = false;
+  String? _downloadedFilePath;
 
   // Get operation title based on operation type
   String _getOperationTitle() {
@@ -142,63 +146,162 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     });
 
     try {
-      // Download file
-      final file = await FileUtils.saveFileFromUrl(
+      // Create a temporary directory for downloaded files if it doesn't exist
+      final tempDir = await getTemporaryDirectory();
+      final downloadDir = Directory('${tempDir.path}/downloads');
+      if (!await downloadDir.exists()) {
+        await downloadDir.create(recursive: true);
+      }
+
+      // Log the file URL for debugging
+      debugPrint('Downloading file from URL: ${widget.fileUrl}');
+
+      // Download file to temporary location
+      final tempFile = await FileUtils.saveFileFromUrl(
         widget.fileUrl,
         widget.fileName,
+        directoryPath: downloadDir.path,
       );
 
       if (!mounted) return;
+
+      // Store the temporary file path for preview
+      setState(() {
+        _downloadedFilePath = tempFile.path;
+      });
 
       // Save to downloads
       final savedPath = await FileUtils.saveFileToDownloads(
-        file,
+        tempFile,
         widget.fileName,
       );
 
       if (!mounted) return;
+
+      setState(() {
+        _isDownloading = false;
+      });
 
       if (savedPath != null) {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppConstants.successDownloadMessage),
+            content: Text('File saved successfully: ${widget.fileName}'),
             behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'Open',
+              onPressed: () => _openFile(savedPath),
+            ),
           ),
         );
       }
     } catch (error) {
       if (!mounted) return;
 
-      ErrorHandler.showErrorDialog(
-        context,
-        error,
-        onRetry: _downloadFile,
+      setState(() {
+        _isDownloading = false;
+      });
+
+      // Show error message with details
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error downloading file: ${error.toString()}'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+          action: SnackBarAction(
+            label: 'Retry',
+            onPressed: _downloadFile,
+            textColor: Colors.white,
+          ),
+        ),
       );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isDownloading = false;
-        });
-      }
     }
   }
 
-  Future<void> _previewFile() async {
+  Future<void> _openFile(String filePath) async {
     try {
-      context.push(
-        RouteNames.fileViewerPath,
-        extra: {
-          'fileUrl': widget.fileUrl,
-          'fileName': widget.fileName,
-        },
-      );
+      await FileUtils.openFile(filePath);
     } catch (error) {
       if (!mounted) return;
 
       ErrorHandler.showErrorSnackBar(
         context,
         error,
+      );
+    }
+  }
+
+  Future<void> _previewFile() async {
+    // If we've already downloaded the file, use that path for preview
+    if (_downloadedFilePath != null &&
+        File(_downloadedFilePath!).existsSync()) {
+      _navigateToPreview();
+      return;
+    }
+
+    try {
+      setState(() {
+        _isDownloading = true;
+      });
+
+      // Create a temporary directory for downloaded files if it doesn't exist
+      final tempDir = await getTemporaryDirectory();
+      final previewDir = Directory('${tempDir.path}/previews');
+      if (!await previewDir.exists()) {
+        await previewDir.create(recursive: true);
+      }
+
+      // Download file for preview
+      final tempFile = await FileUtils.saveFileFromUrl(
+        widget.fileUrl,
+        widget.fileName,
+        directoryPath: previewDir.path,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _isDownloading = false;
+        _downloadedFilePath = tempFile.path;
+      });
+
+      // Navigate to preview screen
+      _navigateToPreview();
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        _isDownloading = false;
+      });
+
+      ErrorHandler.showErrorSnackBar(
+        context,
+        error,
+      );
+    }
+  }
+
+  void _navigateToPreview() {
+    // Use the URL or the local file path
+    if (_downloadedFilePath != null &&
+        File(_downloadedFilePath!).existsSync()) {
+      // We already have a local file, use it
+      context.push(
+        RouteNames.fileViewerPath,
+        extra: {
+          'fileUrl': widget.fileUrl,
+          'fileName': widget.fileName,
+          'localFilePath': _downloadedFilePath,
+        },
+      );
+    } else {
+      // Use the URL
+      context.push(
+        RouteNames.fileViewerPath,
+        extra: {
+          'fileUrl': widget.fileUrl,
+          'fileName': widget.fileName,
+        },
       );
     }
   }
@@ -218,86 +321,93 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Success icon
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
-                shape: BoxShape.circle,
+      body: _isDownloading
+          ? Center(
+              child: AppLoading(
+                message: 'Downloading file...',
+                size: LoadingSize.large,
               ),
-              child: Icon(
-                _getOperationIcon(),
-                color: AppColors.success,
-                size: 48,
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Success icon
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: AppColors.success.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      _getOperationIcon(),
+                      color: AppColors.success,
+                      size: 48,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Success title and message
+                  Text(
+                    _getOperationTitle(),
+                    style: theme.textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _getSuccessMessage(),
+                    style: theme.textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Download card
+                  DownloadCard(
+                    fileName: widget.fileName,
+                    fileUrl: widget.fileUrl,
+                    isDownloading: _isDownloading,
+                    onDownload: _downloadFile,
+                    onPreview: _previewFile,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Operation details
+                  if (widget.operation == AppConstants.operationCompress &&
+                      widget.additionalData != null) ...[
+                    _CompressionDetails(data: widget.additionalData!),
+                  ] else if (widget.operation == AppConstants.operationMerge &&
+                      widget.additionalData != null) ...[
+                    _MergeDetails(data: widget.additionalData!),
+                  ] else if (widget.operation == AppConstants.operationSplit &&
+                      widget.additionalData != null) ...[
+                    _SplitDetails(data: widget.additionalData!),
+                  ],
+                  const SizedBox(height: 32),
+
+                  // Action buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AppButton(
+                        label: 'New Operation',
+                        icon: Icons.add,
+                        onPressed: () => context.go(RouteNames.homePath),
+                        type: AppButtonType.outline,
+                      ),
+                      const SizedBox(width: 16),
+                      AppButton(
+                        label: 'Done',
+                        icon: Icons.check,
+                        onPressed: () => context.go(RouteNames.homePath),
+                        type: AppButtonType.primary,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-
-            // Success title and message
-            Text(
-              _getOperationTitle(),
-              style: theme.textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _getSuccessMessage(),
-              style: theme.textTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-
-            // Download card
-            DownloadCard(
-              fileName: widget.fileName,
-              fileUrl: widget.fileUrl,
-              isDownloading: _isDownloading,
-              onDownload: _downloadFile,
-              onPreview: _previewFile,
-            ),
-            const SizedBox(height: 24),
-
-            // Operation details
-            if (widget.operation == AppConstants.operationCompress &&
-                widget.additionalData != null) ...[
-              _CompressionDetails(data: widget.additionalData!),
-            ] else if (widget.operation == AppConstants.operationMerge &&
-                widget.additionalData != null) ...[
-              _MergeDetails(data: widget.additionalData!),
-            ] else if (widget.operation == AppConstants.operationSplit &&
-                widget.additionalData != null) ...[
-              _SplitDetails(data: widget.additionalData!),
-            ],
-            const SizedBox(height: 32),
-
-            // Action buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AppButton(
-                  label: 'New Operation',
-                  icon: Icons.add,
-                  onPressed: () => context.go(RouteNames.homePath),
-                  type: AppButtonType.outline,
-                ),
-                const SizedBox(width: 16),
-                AppButton(
-                  label: 'Done',
-                  icon: Icons.check,
-                  onPressed: () => context.go(RouteNames.homePath),
-                  type: AppButtonType.primary,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -316,7 +426,8 @@ class _CompressionDetails extends StatelessWidget {
 
     // Calculate size reduction
     final reduction = originalSize - compressedSize;
-    final reductionPercentage = reduction / originalSize * 100;
+    final reductionPercentage =
+        originalSize > 0 ? (reduction / originalSize * 100) : 0;
 
     return Card(
       elevation: 0,
@@ -451,7 +562,8 @@ class _SplitDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final totalPages = data['totalPages'] as int? ?? 0;
-    final splitCount = data['splitParts']?.length ?? 0;
+    final splitParts = data['splitParts'];
+    final splitCount = splitParts is List ? splitParts.length : 0;
 
     return Card(
       elevation: 0,

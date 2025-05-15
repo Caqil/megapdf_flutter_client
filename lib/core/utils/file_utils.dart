@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:megapdf_flutter_client/core/constants/app_constants.dart';
+import 'package:megapdf_flutter_client/core/constants/api_constants.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
 import 'package:megapdf_flutter_client/data/models/pdf_file.dart';
 import 'package:mime/mime.dart';
@@ -146,22 +147,53 @@ class FileUtils {
     return lookupMimeType('file.$extension') ?? 'application/octet-stream';
   }
 
-  // Save file from URL
+  // Save file from URL - FIXED VERSION
   static Future<File> saveFileFromUrl(
     String url,
     String filename, {
     String? directoryPath,
-    ProgressCallback? onReceiveProgress,
+    Function(int received, int total)? onReceiveProgress,
   }) async {
     try {
-      // Create a temporary file
+      // Create a temporary file path
       final tempDir = await getTemporaryDirectory();
       final tempPath = directoryPath ?? tempDir.path;
-      final filePath = '$tempPath/${const Uuid().v4()}_$filename';
+      final uniqueId =
+          const Uuid().v4(); // Generate unique ID to avoid conflicts
+      final filePath = '$tempPath/$uniqueId-$filename';
       final file = File(filePath);
 
-      // Download the file
-      final response = await http.get(Uri.parse(url));
+      // Create parent directory if it doesn't exist
+      if (!(await file.parent.exists())) {
+        await file.parent.create(recursive: true);
+      }
+
+      // Construct the proper URL with base URL if needed
+      Uri uri;
+
+      // Check if URL is already absolute
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        uri = Uri.parse(url);
+      }
+      // Check if it's an absolute path
+      else if (url.startsWith('/')) {
+        // Combine with base URL
+        final baseUrl = ApiConstants.baseUrl;
+        uri = Uri.parse('$baseUrl$url');
+      }
+      // Relative path
+      else {
+        // Combine with base URL
+        final baseUrl = ApiConstants.baseUrl;
+        uri = Uri.parse('$baseUrl/$url');
+      }
+
+      // Log the URL being used
+      debugPrint('Downloading file from: $uri');
+
+      // Download the file using http package
+      final client = http.Client();
+      final response = await client.get(uri);
 
       if (response.statusCode != 200) {
         throw AppError(
@@ -171,9 +203,21 @@ class FileUtils {
         );
       }
 
-      // Write the file
-      await file.writeAsBytes(response.bodyBytes);
+      // Get the total file size
+      final contentLength = response.contentLength ?? response.bodyBytes.length;
 
+      // Write file with progress reporting
+      await file.writeAsBytes(
+        response.bodyBytes,
+        flush: true,
+      );
+
+      // Report 100% progress when done
+      if (onReceiveProgress != null && contentLength > 0) {
+        onReceiveProgress(contentLength, contentLength);
+      }
+
+      client.close();
       return file;
     } catch (e) {
       if (e is AppError) {
@@ -181,7 +225,7 @@ class FileUtils {
       }
       throw AppError(
         message: 'Error saving file from URL: ${e.toString()}',
-        type: AppErrorType.fileAccess,
+        type: AppErrorType.network,
       );
     }
   }
@@ -192,16 +236,46 @@ class FileUtils {
     String filename,
   ) async {
     try {
-      final params = SaveFileDialogParams(
-        sourceFilePath: file.path,
-        fileName: filename,
-      );
+      // For iOS and Android
+      if (Platform.isIOS || Platform.isAndroid) {
+        final params = SaveFileDialogParams(
+          sourceFilePath: file.path,
+          fileName: filename,
+        );
 
-      return await FlutterFileDialog.saveFile(params: params);
+        return await FlutterFileDialog.saveFile(params: params);
+      }
+      // For desktop platforms
+      else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+        // Get downloads directory
+        final downloadsDir = await getDownloadsDirectory();
+        if (downloadsDir == null) {
+          throw AppError(
+            message: 'Could not find downloads directory',
+            type: AppErrorType.fileSystem,
+          );
+        }
+
+        // Create the file path in downloads
+        final savePath = '${downloadsDir.path}/$filename';
+
+        // Copy the file to downloads
+        await file.copy(savePath);
+
+        return savePath;
+      }
+
+      throw AppError(
+        message: 'Platform not supported for downloads',
+        type: AppErrorType.fileSystem,
+      );
     } catch (e) {
+      if (e is AppError) {
+        rethrow;
+      }
       throw AppError(
         message: 'Error saving file to downloads: ${e.toString()}',
-        type: AppErrorType.fileAccess,
+        type: AppErrorType.fileSystem,
       );
     }
   }
@@ -209,6 +283,16 @@ class FileUtils {
   // Open file with default app
   static Future<void> openFile(String filePath) async {
     try {
+      final file = File(filePath);
+
+      // Check if file exists
+      if (!await file.exists()) {
+        throw AppError(
+          message: 'File does not exist: $filePath',
+          type: AppErrorType.fileMissing,
+        );
+      }
+
       final result = await OpenFile.open(filePath);
 
       if (result.type != ResultType.done) {
@@ -218,6 +302,9 @@ class FileUtils {
         );
       }
     } catch (e) {
+      if (e is AppError) {
+        rethrow;
+      }
       throw AppError(
         message: 'Error opening file: ${e.toString()}',
         type: AppErrorType.fileAccess,

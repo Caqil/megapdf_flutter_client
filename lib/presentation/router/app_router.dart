@@ -15,6 +15,7 @@ import '../screens/repair/repair_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/sign/sign_screen.dart';
 import '../screens/split/split_screen.dart';
+import '../screens/viewer/file_viewer_screen.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -336,22 +337,6 @@ class OcrScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('OCR')),
       body: const Center(child: Text('OCR Screen')),
-    );
-  }
-}
-
-class FileViewerScreen extends StatelessWidget {
-  final String fileUrl;
-  final String fileName;
-
-  const FileViewerScreen(
-      {super.key, required this.fileUrl, required this.fileName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(fileName)),
-      body: Center(child: Text('Viewing file: $fileUrl')),
     );
   }
 }
