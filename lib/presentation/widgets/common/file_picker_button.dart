@@ -1,5 +1,3 @@
-// lib/presentation/widgets/common/file_picker_button.dart
-
 import 'package:flutter/material.dart';
 import 'package:megapdf_flutter_client/core/constants/app_constants.dart';
 import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
@@ -9,6 +7,7 @@ import 'package:megapdf_flutter_client/core/utils/file_utils.dart';
 import 'package:megapdf_flutter_client/core/utils/permissions_helper.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
 import 'package:megapdf_flutter_client/data/models/pdf_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FilePickerButton extends StatelessWidget {
   final Function(PdfFile) onFilePicked;
@@ -57,6 +56,36 @@ class FilePickerButton extends StatelessWidget {
         final hasPermission =
             await PermissionsHelper.requestStoragePermission();
         if (!hasPermission) {
+          // Check if permission is permanently denied
+          final isPermanentlyDenied =
+              await PermissionsHelper.isPermanentlyDenied(Permission.storage) ||
+                  await PermissionsHelper.isPermanentlyDenied(
+                      Permission.photos);
+          if (isPermanentlyDenied) {
+            // Show dialog to guide user to app settings
+            await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Permission Required'),
+                content: const Text(
+                    'Storage permission is required to pick files. Please enable it in app settings.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await PermissionsHelper.openAppSettings();
+                    },
+                    child: const Text('Open Settings'),
+                  ),
+                ],
+              ),
+            );
+            return; // Exit without throwing an error
+          }
           throw AppError(
             message: 'Storage permission is required to pick files',
             type: AppErrorType.fileAccess,
@@ -190,6 +219,36 @@ class MultipleFilePickerButton extends StatelessWidget {
         final hasPermission =
             await PermissionsHelper.requestStoragePermission();
         if (!hasPermission) {
+          // Check if permission is permanently denied
+          final isPermanentlyDenied =
+              await PermissionsHelper.isPermanentlyDenied(Permission.storage) ||
+                  await PermissionsHelper.isPermanentlyDenied(
+                      Permission.photos);
+          if (isPermanentlyDenied) {
+            // Show dialog to guide user to app settings
+            await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Permission Required'),
+                content: const Text(
+                    'Storage permission is required to pick files. Please enable it in app settings.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await PermissionsHelper.openAppSettings();
+                    },
+                    child: const Text('Open Settings'),
+                  ),
+                ],
+              ),
+            );
+            return; // Exit without throwing an error
+          }
           throw AppError(
             message: 'Storage permission is required to pick files',
             type: AppErrorType.fileAccess,
@@ -356,6 +415,35 @@ class DragDropFileUpload extends StatelessWidget {
     try {
       final hasPermission = await PermissionsHelper.requestStoragePermission();
       if (!hasPermission) {
+        // Check if permission is permanently denied
+        final isPermanentlyDenied =
+            await PermissionsHelper.isPermanentlyDenied(Permission.storage) ||
+                await PermissionsHelper.isPermanentlyDenied(Permission.photos);
+        if (isPermanentlyDenied) {
+          // Show dialog to guide user to app settings
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Permission Required'),
+              content: const Text(
+                  'Storage permission is required to pick files. Please enable it in app settings.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await PermissionsHelper.openAppSettings();
+                  },
+                  child: const Text('Open Settings'),
+                ),
+              ],
+            ),
+          );
+          return; // Exit without throwing an error
+        }
         throw AppError(
           message: 'Storage permission is required to pick files',
           type: AppErrorType.fileAccess,
