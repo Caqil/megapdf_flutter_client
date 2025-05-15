@@ -1,0 +1,86 @@
+name: megapdf_flutter_client
+description: A Flutter application for PDF tools with API integration
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Navigation
+  go_router: ^15.1.2
+
+  # Network and API
+  dio: ^5.4.0
+  retrofit: ^4.0.3
+  json_annotation: ^4.8.1
+
+  # File handling
+  file_picker: ^10.1.9
+  path_provider: ^2.1.2
+  open_file: ^3.3.2
+  permission_handler: ^12.0.0+1
+  flutter_file_dialog: ^3.0.2
+
+  # PDF handling
+  pdf: ^3.10.7
+  printing: ^5.11.1
+  syncfusion_flutter_pdfviewer: ^29.2.4
+  syncfusion_flutter_signaturepad: ^29.2.4
+
+  # Storage
+  shared_preferences: ^2.2.2
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+
+  # UI components
+  flutter_svg: ^2.0.9
+  flutter_spinkit: ^5.2.0
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.1
+  image_picker: ^1.0.7
+  adaptive_dialog: ^2.4.1
+  flex_color_picker: ^3.3.0
+  flutter_slidable: ^4.0.0
+
+  # Utils
+  uuid: ^4.2.2
+  intl: ^0.20.2
+  logger: ^2.0.2+1
+  equatable: ^2.0.5
+  mime: ^2.0.0
+  flutter_dotenv: ^5.1.0
+  path: ^1.8.3
+  collection: ^1.18.0
+  freezed_annotation: ^2.4.1
+  dartz: ^0.10.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # Code generation
+  build_runner: ^2.4.7
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+  riverpod_generator: ^2.3.9
+  retrofit_generator: ^8.0.5
+  isar_generator: ^3.1.0+1
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.3.9
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - .env
