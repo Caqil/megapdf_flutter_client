@@ -1,7 +1,6 @@
 // lib/data/api/api_service.dart
 
 import 'dart:io';
-import 'package:megapdf_flutter_client/core/error/app_error.dart';
 import 'package:megapdf_flutter_client/data/models/api_response.dart';
 import 'package:megapdf_flutter_client/data/models/compression_result.dart';
 import 'package:megapdf_flutter_client/data/models/conversion_result.dart';

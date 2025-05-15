@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ApiConstants {
   // Base URLs
   static String get baseUrl =>
-      dotenv.env['API_BASE_URL'] ?? 'https://api.megapdf.com';
+      dotenv.env['API_BASE_URL'] ?? 'https://megapdf.com';
   static String get apiUrl => '$baseUrl/api';
 
   // Endpoints

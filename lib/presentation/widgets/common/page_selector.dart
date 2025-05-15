@@ -1,7 +1,6 @@
 // lib/presentation/widgets/common/page_selector.dart
 
 import 'package:flutter/material.dart';
-import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
 
 class PageSelector extends StatefulWidget {
   final int currentPage;
@@ -101,7 +100,6 @@ class _PageSelectorState extends State<PageSelector> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final backgroundColor = widget.backgroundColor ?? theme.colorScheme.surface;
-    final selectedColor = widget.selectedColor ?? theme.colorScheme.primary;
     final textColor = widget.textColor ?? theme.colorScheme.onSurface;
 
     return Container(

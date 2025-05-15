@@ -1,7 +1,6 @@
 // lib/data/services/file_service.dart
 
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:megapdf_flutter_client/core/constants/app_constants.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
 import 'package:megapdf_flutter_client/core/utils/file_utils.dart';

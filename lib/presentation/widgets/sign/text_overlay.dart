@@ -1,7 +1,6 @@
 // lib/presentation/widgets/sign/text_overlay.dart
 
 import 'package:flutter/material.dart';
-import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
 
 class TextOverlay extends StatefulWidget {

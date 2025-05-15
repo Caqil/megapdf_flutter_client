@@ -5,7 +5,6 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
   file_selector_linux
-  isar_flutter_libs
   open_file_linux
   printing
   url_launcher_linux

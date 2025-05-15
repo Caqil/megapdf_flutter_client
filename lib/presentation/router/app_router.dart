@@ -12,107 +12,41 @@ import '../screens/home/home_screen.dart';
 import '../screens/merge/merge_screen.dart';
 import '../screens/protect/protect_screen.dart';
 import '../screens/repair/repair_screen.dart';
+import '../screens/settings/settings_screen.dart';
 import '../screens/sign/sign_screen.dart';
 import '../screens/split/split_screen.dart';
 
-// Provider for the router
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authStateProvider);
-
   return GoRouter(
     initialLocation: RouteNames.splashPath,
     debugLogDiagnostics: true,
-    redirect: (context, state) {
-      final isLoggedIn = authState.isAuthenticated;
-      final isInitialized = authState.isInitialized;
-      
-      // If the app is still initializing (checking token), show splash screen
-      if (!isInitialized) {
-        return RouteNames.splashPath;
-      }
-      
-      // Paths that don't require authentication
-      final noAuthRequired = [
-        RouteNames.loginPath,
-        RouteNames.registerPath,
-        RouteNames.forgotPasswordPath,
-        RouteNames.resetPasswordPath,
-        RouteNames.verifyEmailPath,
-      ];
-      
-      // Going to login screen but already logged in? Go to home
-      if (noAuthRequired.contains(state.matchedLocation) && isLoggedIn) {
-        return RouteNames.homePath;
-      }
-      
-      // Going to authenticated route but not logged in? Go to login
-      if (!noAuthRequired.contains(state.matchedLocation) && 
-          !isLoggedIn && 
-          state.matchedLocation != RouteNames.splashPath) {
-        return RouteNames.loginPath;
-      }
-      
-      // No redirect needed
-      return null;
-    },
     routes: [
-      // Splash and auth routes
+      // Splash screen
       GoRoute(
         path: RouteNames.splashPath,
         name: RouteNames.splash,
         builder: (context, state) => const SplashScreen(),
-      ),
-     
-      GoRoute(
-        path: RouteNames.forgotPasswordPath,
-        name: RouteNames.forgotPassword,
-        builder: (context, state) => const ForgotPasswordScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.resetPasswordPath,
-        name: RouteNames.resetPassword,
-        builder: (context, state) {
-          final token = state.uri.queryParameters['token'] ?? '';
-          return ResetPasswordScreen(token: token);
+        // Automatically navigate to home after delay
+        redirect: (context, state) async {
+          // Add a delay to show splash screen
+          await Future.delayed(const Duration(seconds: 2));
+          return RouteNames.homePath;
         },
       ),
-      GoRoute(
-        path: RouteNames.verifyEmailPath,
-        name: RouteNames.verifyEmail,
-        builder: (context, state) {
-          final token = state.uri.queryParameters['token'] ?? '';
-          return VerifyEmailScreen(token: token);
-        },
-      ),
-      
+
       // Main app routes
       GoRoute(
         path: RouteNames.homePath,
         name: RouteNames.home,
         builder: (context, state) => const HomeScreen(),
       ),
-  
+
       GoRoute(
         path: RouteNames.settingsPath,
         name: RouteNames.settings,
         builder: (context, state) => const SettingsScreen(),
       ),
-      GoRoute(
-        path: RouteNames.apiKeysPath,
-        name: RouteNames.apiKeys,
-        builder: (context, state) => const ApiKeysScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.balancePath,
-        name: RouteNames.balance,
-        builder: (context, state) => const BalanceScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.depositFundsPath,
-        name: RouteNames.depositFunds,
-        builder: (context, state) => const DepositFundsScreen(),
-      ),
-      
+
       // PDF operations routes
       GoRoute(
         path: RouteNames.compressPath,
@@ -140,58 +74,28 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ProtectScreen(),
       ),
       GoRoute(
-        path: RouteNames.unlockPath,
-        name: RouteNames.unlock,
-        builder: (context, state) => const UnlockScreen(),
-      ),
-      GoRoute(
         path: RouteNames.repairPath,
         name: RouteNames.repair,
         builder: (context, state) => const RepairScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.rotatePath,
-        name: RouteNames.rotate,
-        builder: (context, state) => const RotateScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.watermarkPath,
-        name: RouteNames.watermark,
-        builder: (context, state) => const WatermarkScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.removePagePath,
-        name: RouteNames.removePage,
-        builder: (context, state) => const RemovePageScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.pageNumbersPath,
-        name: RouteNames.pageNumbers,
-        builder: (context, state) => const PageNumbersScreen(),
       ),
       GoRoute(
         path: RouteNames.signPath,
         name: RouteNames.sign,
         builder: (context, state) => const SignScreen(),
       ),
-      GoRoute(
-        path: RouteNames.ocrPath,
-        name: RouteNames.ocr,
-        builder: (context, state) => const OcrScreen(),
-      ),
-      
+
       // Result routes
       GoRoute(
         path: RouteNames.resultPath,
         name: RouteNames.result,
         builder: (context, state) {
-          final operation = state.uri.queryParameters['operation'] ?? '';
-          final fileUrl = state.uri.queryParameters['fileUrl'] ?? '';
-          final fileName = state.uri.queryParameters['fileName'] ?? '';
+          final Map<String, dynamic> extra =
+              state.extra as Map<String, dynamic>? ?? {};
           return ResultScreen(
-            operation: operation,
-            fileUrl: fileUrl,
-            fileName: fileName,
+            operation: extra['operation'] ?? '',
+            fileUrl: extra['fileUrl'] ?? '',
+            fileName: extra['fileName'] ?? '',
+            additionalData: extra,
           );
         },
       ),
@@ -199,11 +103,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: RouteNames.fileViewerPath,
         name: RouteNames.fileViewer,
         builder: (context, state) {
-          final fileUrl = state.uri.queryParameters['fileUrl'] ?? '';
-          final fileName = state.uri.queryParameters['fileName'] ?? '';
+          final Map<String, dynamic> extra =
+              state.extra as Map<String, dynamic>? ?? {};
           return FileViewerScreen(
-            fileUrl: fileUrl,
-            fileName: fileName,
+            fileUrl: extra['fileUrl'] ?? '',
+            fileName: extra['fileName'] ?? '',
           );
         },
       ),
@@ -242,7 +146,7 @@ class SplashScreen extends ConsumerWidget {
 // Error Screen
 class ErrorScreen extends StatelessWidget {
   final Exception? error;
-  
+
   const ErrorScreen({super.key, this.error});
 
   @override
@@ -302,7 +206,7 @@ class ForgotPasswordScreen extends StatelessWidget {
 
 class ResetPasswordScreen extends StatelessWidget {
   final String token;
-  
+
   const ResetPasswordScreen({super.key, required this.token});
 
   @override
@@ -316,7 +220,7 @@ class ResetPasswordScreen extends StatelessWidget {
 
 class VerifyEmailScreen extends StatelessWidget {
   final String token;
-  
+
   const VerifyEmailScreen({super.key, required this.token});
 
   @override
@@ -439,12 +343,9 @@ class OcrScreen extends StatelessWidget {
 class FileViewerScreen extends StatelessWidget {
   final String fileUrl;
   final String fileName;
-  
-  const FileViewerScreen({
-    super.key, 
-    required this.fileUrl, 
-    required this.fileName
-  });
+
+  const FileViewerScreen(
+      {super.key, required this.fileUrl, required this.fileName});
 
   @override
   Widget build(BuildContext context) {

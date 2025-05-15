@@ -136,66 +136,66 @@ class _SignScreenState extends ConsumerState<SignScreen> {
     });
   }
 
-  Future<void> _signPdf() async {
-    if (_selectedFile == null) {
-      ErrorHandler.showErrorSnackBar(
-        context,
-        AppError(
-          message: 'Please select a PDF file first',
-          type: AppErrorType.validation,
-        ),
-      );
-      return;
-    }
+  // Future<void> _signPdf() async {
+  //   if (_selectedFile == null) {
+  //     ErrorHandler.showErrorSnackBar(
+  //       context,
+  //       AppError(
+  //         message: 'Please select a PDF file first',
+  //         type: AppErrorType.validation,
+  //       ),
+  //     );
+  //     return;
+  //   }
 
-    if (_signatures.isEmpty && _textElements.isEmpty) {
-      ErrorHandler.showErrorSnackBar(
-        context,
-        AppError(
-          message: 'Please add at least one signature or text element',
-          type: AppErrorType.validation,
-        ),
-      );
-      return;
-    }
+  //   if (_signatures.isEmpty && _textElements.isEmpty) {
+  //     ErrorHandler.showErrorSnackBar(
+  //       context,
+  //       AppError(
+  //         message: 'Please add at least one signature or text element',
+  //         type: AppErrorType.validation,
+  //       ),
+  //     );
+  //     return;
+  //   }
 
-    setState(() {
-      _isSigning = true;
-    });
+  //   setState(() {
+  //     _isSigning = true;
+  //   });
 
-    try {
-      final result = await ref.read(signProvider.notifier).signPdf(
-            file: _selectedFile!,
-            signatures: _signatures,
-            textElements: _textElements,
-          );
+  //   try {
+  //     final result = await ref.read(signProvider.notifier).signPdf(
+  //           file: _selectedFile!,
+  //           signatures: _signatures,
+  //           textElements: _textElements,
+  //         );
 
-      if (!mounted) return;
+  //     if (!mounted) return;
 
-      // Navigate to result screen
-      context.pushReplacement(
-        RouteNames.resultPath,
-        extra: {
-          'operation': AppConstants.operationSign,
-          'fileUrl': result.fileUrl,
-          'fileName': result.filename,
-          'originalName': result.originalName,
-        },
-      );
-    } catch (error) {
-      if (!mounted) return;
+  //     // Navigate to result screen
+  //     context.pushReplacement(
+  //       RouteNames.resultPath,
+  //       extra: {
+  //         'operation': AppConstants.operationSign,
+  //         'fileUrl': result.fileUrl,
+  //         'fileName': result.filename,
+  //         'originalName': result.originalName,
+  //       },
+  //     );
+  //   } catch (error) {
+  //     if (!mounted) return;
 
-      setState(() {
-        _isSigning = false;
-      });
+  //     setState(() {
+  //       _isSigning = false;
+  //     });
 
-      ErrorHandler.showErrorDialog(
-        context,
-        error,
-        onRetry: _signPdf,
-      );
-    }
-  }
+  //     ErrorHandler.showErrorDialog(
+  //       context,
+  //       error,
+  //       onRetry: _signPdf,
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -205,12 +205,12 @@ class _SignScreenState extends ConsumerState<SignScreen> {
       appBar: AppBar(
         title: const Text('Sign PDF'),
         actions: [
-          if (_selectedFile != null && !_isLoadingPdf)
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: _signPdf,
-              tooltip: 'Apply Signatures',
-            ),
+          // if (_selectedFile != null && !_isLoadingPdf)
+          //   IconButton(
+          //     icon: const Icon(Icons.check),
+          //     onPressed: _signPdf,
+          //     tooltip: 'Apply Signatures',
+          //   ),
         ],
       ),
       body: AppLoadingOverlay(

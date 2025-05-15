@@ -20,7 +20,7 @@ enum AppButtonSize {
 
 class AppButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final void Function()? onPressed;
   final AppButtonType type;
   final AppButtonSize size;
   final IconData? icon;

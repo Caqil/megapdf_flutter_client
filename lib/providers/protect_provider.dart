@@ -1,6 +1,5 @@
 // lib/providers/protect_provider.dart
 
-import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
 import 'package:megapdf_flutter_client/data/api/api_client.dart';

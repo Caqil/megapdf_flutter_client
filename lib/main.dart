@@ -11,8 +11,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Load environment variables
-  await dotenv.load(fileName: '.env');
-  
+  // await dotenv.load(fileName: '.env');
+
   // Clean up any leftover temporary files
   await FileUtils.cleanupTempFiles();
 

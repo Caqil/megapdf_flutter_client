@@ -1,8 +1,7 @@
-// lib/data/api/api_client.dart
-
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http_parser/http_parser.dart'; // Add this import
 import 'package:logger/logger.dart';
 import 'package:megapdf_flutter_client/core/constants/api_constants.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
@@ -58,10 +57,29 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      final requestOptions = Options(headers: headers);
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.contentType = options.contentType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
+
       final response = await _dio.get(
         path,
         queryParameters: queryParameters,
-        options: Options(headers: headers)..merge(options),
+        options: requestOptions,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
@@ -86,11 +104,30 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      final requestOptions = Options(headers: headers);
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.contentType = options.contentType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
+
       final response = await _dio.post(
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(headers: headers)..merge(options),
+        options: requestOptions,
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
@@ -116,11 +153,30 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      final requestOptions = Options(headers: headers);
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.contentType = options.contentType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
+
       final response = await _dio.put(
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(headers: headers)..merge(options),
+        options: requestOptions,
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
@@ -146,11 +202,30 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      final requestOptions = Options(headers: headers);
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.contentType = options.contentType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
+
       final response = await _dio.patch(
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(headers: headers)..merge(options),
+        options: requestOptions,
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
@@ -174,11 +249,30 @@ class ApiClient {
     CancelToken? cancelToken,
   }) async {
     try {
+      final requestOptions = Options(headers: headers);
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.contentType = options.contentType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
+
       final response = await _dio.delete(
         path,
         data: data,
         queryParameters: queryParameters,
-        options: Options(headers: headers)..merge(options),
+        options: requestOptions,
         cancelToken: cancelToken,
       );
 
@@ -235,7 +329,25 @@ class ApiClient {
       final requestOptions = Options(
         contentType: ApiConstants.multipartFormData,
         headers: headers,
-      )..merge(options);
+      );
+
+      // Merge with provided options if any
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
 
       // Make the request
       final response = await _dio.post(
@@ -298,7 +410,25 @@ class ApiClient {
       final requestOptions = Options(
         contentType: ApiConstants.multipartFormData,
         headers: headers,
-      )..merge(options);
+      );
+
+      // Merge with provided options if any
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
 
       // Make the request
       final response = await _dio.post(
@@ -330,11 +460,30 @@ class ApiClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
+      final requestOptions = Options(headers: headers);
+      if (options != null) {
+        requestOptions.method = options.method;
+        requestOptions.sendTimeout = options.sendTimeout;
+        requestOptions.receiveTimeout = options.receiveTimeout;
+        requestOptions.extra = options.extra;
+        requestOptions.headers?.addAll(options.headers ?? {});
+        requestOptions.responseType = options.responseType;
+        requestOptions.contentType = options.contentType;
+        requestOptions.validateStatus = options.validateStatus;
+        requestOptions.receiveDataWhenStatusError =
+            options.receiveDataWhenStatusError;
+        requestOptions.followRedirects = options.followRedirects;
+        requestOptions.maxRedirects = options.maxRedirects;
+        requestOptions.requestEncoder = options.requestEncoder;
+        requestOptions.responseDecoder = options.responseDecoder;
+        requestOptions.listFormat = options.listFormat;
+      }
+
       final response = await _dio.download(
         url,
         savePath,
         queryParameters: queryParameters,
-        options: Options(headers: headers)..merge(options),
+        options: requestOptions,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
@@ -399,9 +548,7 @@ class ApiClient {
     final statusCode = error.response?.statusCode;
     final data = error.response?.data;
 
-    // Get error message from response if available
     String errorMessage = 'Unknown error';
-
     if (data is Map<String, dynamic>) {
       errorMessage = data['error'] ?? data['message'] ?? 'Unknown error';
     } else if (data is String) {

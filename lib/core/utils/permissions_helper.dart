@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class PermissionsHelper {
   // Check and request storage permission for reading files
@@ -70,9 +71,9 @@ class PermissionsHelper {
     if (Platform.isIOS) return true;
 
     if (Platform.isAndroid) {
-      // For Android 10+ (SDK 29+), we need to check specific permissions
-      final sdkVersion = await getSdkVersion();
-
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      final sdkVersion = androidInfo.version.sdkInt;
       if (sdkVersion >= 33) {
         // Android 13+ requires specific media permissions
         final photos = await Permission.photos.status;
@@ -102,18 +103,6 @@ class PermissionsHelper {
 
     // Default for other platforms
     return true;
-  }
-
-  // Get Android SDK version
-  static Future<int> getSdkVersion() async {
-    if (!Platform.isAndroid) return 0;
-
-    try {
-      return int.parse(await Permission.getSdkVersion() ?? '0');
-    } catch (e) {
-      debugPrint('Error getting SDK version: $e');
-      return 0;
-    }
   }
 
   // Check if a permission is permanently denied

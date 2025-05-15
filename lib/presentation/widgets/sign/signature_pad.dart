@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
-import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
 
 class SignaturePad extends StatefulWidget {
@@ -129,15 +128,15 @@ class _SignaturePadState extends State<SignaturePad> {
               child: Stack(
                 children: [
                   // Signature pad
-                  SfSignaturePad(
-                    key: _signaturePadKey,
-                    backgroundColor: widget.backgroundColor,
-                    strokeColor: widget.penColor,
-                    minimumStrokeWidth: widget.strokeWidth,
-                    maximumStrokeWidth: widget.strokeWidth * 1.5,
-                    onDrawStart: _handlePanStart,
-                    onDrawEnd: _handlePanEnd,
-                  ),
+                  // SfSignaturePad(
+                  //   key: _signaturePadKey,
+                  //   backgroundColor: widget.backgroundColor,
+                  //   strokeColor: widget.penColor,
+                  //   minimumStrokeWidth: widget.strokeWidth,
+                  //   maximumStrokeWidth: widget.strokeWidth * 1.5,
+                  //   onDrawStart: _handlePanStart,
+                  //   onDrawEnd: _handlePanEnd,
+                  // ),
 
                   // Guide line
                   Positioned(
@@ -199,7 +198,11 @@ class _SignaturePadState extends State<SignaturePad> {
               AppButton(
                 label: 'Save',
                 icon: Icons.check,
-                onPressed: _hasSignature ? _saveSignature : null,
+                onPressed: _hasSignature
+                    ? () async {
+                        await _saveSignature();
+                      }
+                    : null,
                 type: AppButtonType.primary,
                 isDisabled: !_hasSignature,
               ),

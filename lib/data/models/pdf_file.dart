@@ -1,8 +1,6 @@
-// lib/data/models/pdf_file.dart
-
 import 'dart:io';
 import 'package:equatable/equatable.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p; // Import the path package with an alias
 
 class PdfFile extends Equatable {
   final String name;
@@ -30,13 +28,13 @@ class PdfFile extends Equatable {
   // Factory to create PdfFile from a File object
   factory PdfFile.fromFile(File file) {
     return PdfFile(
-      name: path.basename(file.path),
+      name: p.basename(file.path), // Use path package's basename
       path: file.path,
       size: file.lengthSync(),
       lastModified: file.lastModifiedSync(),
       file: file,
-      extension: path.extension(file.path).toLowerCase().replaceFirst('.', ''),
-      mimeType: _getMimeType(path.extension(file.path)),
+      extension: p.extension(file.path).toLowerCase().replaceFirst('.', ''),
+      mimeType: _getMimeType(p.extension(file.path)),
     );
   }
 
@@ -54,8 +52,8 @@ class PdfFile extends Equatable {
       lastModified: DateTime.now(),
       pageCount: pageCount,
       serverUrl: url,
-      extension: path.extension(name).toLowerCase().replaceFirst('.', ''),
-      mimeType: _getMimeType(path.extension(name)),
+      extension: p.extension(name).toLowerCase().replaceFirst('.', ''),
+      mimeType: _getMimeType(p.extension(name)),
     );
   }
 
@@ -98,9 +96,9 @@ class PdfFile extends Equatable {
 
   // Get file size in human-readable format
   String get formattedSize {
-    final kb = 1024;
-    final mb = kb * 1024;
-    final gb = mb * 1024;
+    const kb = 1024;
+    const mb = kb * 1024;
+    const gb = mb * 1024;
 
     if (size >= gb) {
       return '${(size / gb).toStringAsFixed(2)} GB';
@@ -155,13 +153,13 @@ class PdfFile extends Equatable {
 
   @override
   List<Object?> get props => [
-    name,
-    path,
-    size,
-    lastModified,
-    pageCount,
-    mimeType,
-    extension,
-    serverUrl,
-  ];
+        name,
+        path,
+        size,
+        lastModified,
+        pageCount,
+        mimeType,
+        extension,
+        serverUrl,
+      ];
 }

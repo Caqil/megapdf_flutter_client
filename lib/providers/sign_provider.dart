@@ -1,6 +1,5 @@
 // lib/providers/sign_provider.dart
 
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
@@ -8,6 +7,62 @@ import 'package:megapdf_flutter_client/data/api/api_client.dart';
 import 'package:megapdf_flutter_client/data/models/pdf_file.dart';
 import 'package:megapdf_flutter_client/core/constants/api_constants.dart';
 import 'package:megapdf_flutter_client/data/models/sign_result.dart';
+
+// TextElement class for signing documents with text
+class TextElement {
+  final String id;
+  final int page;
+  final Offset position;
+  final String text;
+  final Color textColor;
+  final double fontSize;
+  final String fontFamily;
+  final double rotation;
+
+  TextElement({
+    required this.id,
+    required this.page,
+    required this.position,
+    required this.text,
+    required this.textColor,
+    required this.fontSize,
+    required this.fontFamily,
+    required this.rotation,
+  });
+}
+
+// SignatureElement class for signing documents with drawn signatures
+class SignatureElement {
+  final String id;
+  final int page;
+  final Offset position;
+  final Size size;
+  final String data; // Base64 encoded image data
+  final double rotation;
+  final double scale;
+
+  SignatureElement({
+    required this.id,
+    required this.page,
+    required this.position,
+    required this.size,
+    required this.data,
+    required this.rotation,
+    required this.scale,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'page': page,
+      'position': {'x': position.dx, 'y': position.dy},
+      'size': {'width': size.width, 'height': size.height},
+      'data': data,
+      'rotation': rotation,
+      'scale': scale,
+    };
+  }
+}
 
 class SignState {
   final bool isLoading;
