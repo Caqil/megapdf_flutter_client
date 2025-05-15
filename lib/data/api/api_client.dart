@@ -5,7 +5,6 @@ import 'package:http_parser/http_parser.dart'; // Add this import
 import 'package:logger/logger.dart';
 import 'package:megapdf_flutter_client/core/constants/api_constants.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
-import 'package:megapdf_flutter_client/data/api/interceptors/auth_interceptor.dart';
 
 class ApiClient {
   late final Dio _dio;
@@ -28,8 +27,6 @@ class ApiClient {
       ),
     );
 
-    // Add interceptors
-    _dio.interceptors.add(AuthInterceptor());
 
     // Add logging interceptor only in debug mode
     if (kDebugMode) {

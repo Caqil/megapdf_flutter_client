@@ -8,61 +8,10 @@ import 'package:megapdf_flutter_client/data/models/merge_result.dart';
 import 'package:megapdf_flutter_client/data/models/repair_result.dart';
 import 'package:megapdf_flutter_client/data/models/sign_result.dart';
 import 'package:megapdf_flutter_client/data/models/split_result.dart';
-import 'package:megapdf_flutter_client/data/models/user.dart';
-
 // Abstract API service interface
 abstract class ApiService {
-  // Authentication
-  Future<ApiResponse<User>> login({
-    required String email,
-    required String password,
-  });
 
-  Future<ApiResponse<bool>> register({
-    required String name,
-    required String email,
-    required String password,
-  });
 
-  Future<ApiResponse<bool>> validateToken();
-
-  Future<ApiResponse<bool>> logout();
-
-  Future<ApiResponse<bool>> requestPasswordReset({
-    required String email,
-  });
-
-  Future<ApiResponse<bool>> resetPassword({
-    required String token,
-    required String password,
-  });
-
-  Future<ApiResponse<bool>> verifyEmail({
-    required String token,
-  });
-
-  // User profile
-  Future<ApiResponse<User>> getUserProfile();
-
-  Future<ApiResponse<User>> updateUserProfile({
-    required String name,
-  });
-
-  Future<ApiResponse<bool>> updatePassword({
-    required String currentPassword,
-    required String newPassword,
-  });
-
-  // API keys
-  Future<ApiResponse<List<dynamic>>> getApiKeys();
-
-  Future<ApiResponse<dynamic>> createApiKey({
-    required String name,
-  });
-
-  Future<ApiResponse<bool>> deleteApiKey({
-    required String id,
-  });
 
   // PDF operations
   Future<ApiResponse<CompressionResult>> compressPdf({

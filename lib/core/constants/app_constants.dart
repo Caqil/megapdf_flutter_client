@@ -7,7 +7,6 @@ class AppConstants {
   static const String appBuildNumber = '1';
 
   // Storage keys
-  static const String tokenKey = 'auth_token';
   static const String userKey = 'user_data';
   static const String apiKeyKey = 'api_key';
   static const String themeKey = 'app_theme';

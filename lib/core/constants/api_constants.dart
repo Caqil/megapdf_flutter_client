@@ -68,8 +68,6 @@ class ApiConstants {
   // Headers
   static const String contentType = 'Content-Type';
   static const String accept = 'Accept';
-  static const String authorization = 'Authorization';
-  static const String bearerToken = 'Bearer';
   static const String apiKey = 'x-api-key';
 
   // Content Types

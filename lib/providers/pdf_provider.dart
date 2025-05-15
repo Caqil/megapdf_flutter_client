@@ -8,7 +8,6 @@ import 'package:megapdf_flutter_client/data/models/api_response.dart';
 import 'package:megapdf_flutter_client/data/models/pdf_file.dart';
 import 'package:megapdf_flutter_client/data/repositories/pdf_repository.dart';
 import 'package:megapdf_flutter_client/data/services/file_service.dart';
-import 'package:megapdf_flutter_client/providers/auth_provider.dart';
 import 'package:megapdf_flutter_client/providers/file_service_provider.dart';
 
 // Main PDF state
@@ -228,12 +227,6 @@ class PdfNotifier extends StateNotifier<PdfState> {
   }
 }
 
-// API service implementation provider
-final apiServiceProvider = Provider<ApiService>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ApiServiceImpl(apiClient: apiClient);
-});
-
 // Create ApiServiceImpl class as a concrete implementation of ApiService
 class ApiServiceImpl implements ApiService {
   final ApiClient _apiClient;
@@ -274,53 +267,3 @@ class ApiServiceImpl implements ApiService {
     ));
   }
 }
-
-// PDF repository provider
-final pdfRepositoryProvider = Provider<PdfRepository>((ref) {
-  final apiService = ref.watch(apiServiceProvider);
-  final fileService = ref.watch(fileServiceProvider);
-  return PdfRepository(
-    apiService: apiService,
-    fileService: fileService,
-  );
-});
-
-// PDF state provider
-final pdfProvider = StateNotifierProvider<PdfNotifier, PdfState>((ref) {
-  final pdfRepository = ref.watch(pdfRepositoryProvider);
-  final fileService = ref.watch(fileServiceProvider);
-  return PdfNotifier(
-    pdfRepository: pdfRepository,
-    fileService: fileService,
-  );
-});
-
-// Current file provider
-final currentFileProvider = Provider<PdfFile?>((ref) {
-  return ref.watch(pdfProvider).currentFile;
-});
-
-// Page count provider
-final pageCountProvider = Provider<int>((ref) {
-  return ref.watch(pdfProvider).pageCount;
-});
-
-// Current page provider
-final currentPageProvider = Provider<int>((ref) {
-  return ref.watch(pdfProvider).currentPage;
-});
-
-// Recent files provider
-final recentFilesProvider = Provider<List<PdfFile>>((ref) {
-  return ref.watch(pdfProvider).recentFiles;
-});
-
-// Loading state provider
-final pdfLoadingProvider = Provider<bool>((ref) {
-  return ref.watch(pdfProvider).isLoading;
-});
-
-// Error message provider
-final pdfErrorProvider = Provider<String?>((ref) {
-  return ref.watch(pdfProvider).errorMessage;
-});

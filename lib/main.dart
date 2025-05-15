@@ -1,7 +1,6 @@
 // lib/main.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:megapdf_flutter_client/app.dart';
 import 'package:megapdf_flutter_client/core/utils/file_utils.dart';

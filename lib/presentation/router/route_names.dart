@@ -3,19 +3,11 @@
 class RouteNames {
   // Auth routes
   static const String splash = 'splash';
-  static const String login = 'login';
-  static const String register = 'register';
-  static const String forgotPassword = 'forgot-password';
-  static const String resetPassword = 'reset-password';
-  static const String verifyEmail = 'verify-email';
   
   // Main app routes
   static const String home = 'home';
-  static const String profile = 'profile';
   static const String settings = 'settings';
   static const String apiKeys = 'api-keys';
-  static const String balance = 'balance';
-  static const String depositFunds = 'deposit-funds';
   
   // PDF operations routes
   static const String compress = 'compress';
@@ -38,18 +30,9 @@ class RouteNames {
   
   // Path strings
   static const String splashPath = '/';
-  static const String loginPath = '/login';
-  static const String registerPath = '/register';
-  static const String forgotPasswordPath = '/forgot-password';
-  static const String resetPasswordPath = '/reset-password';
-  static const String verifyEmailPath = '/verify-email';
   
   static const String homePath = '/home';
-  static const String profilePath = '/profile';
   static const String settingsPath = '/settings';
-  static const String apiKeysPath = '/api-keys';
-  static const String balancePath = '/balance';
-  static const String depositFundsPath = '/deposit-funds';
   
   static const String compressPath = '/compress';
   static const String convertPath = '/convert';
