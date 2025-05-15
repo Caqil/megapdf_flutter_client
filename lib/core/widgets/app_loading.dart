@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
+import 'package:megapdf_flutter_client/core/theme/app_theme.dart';
 
 enum LoadingSize {
   small,

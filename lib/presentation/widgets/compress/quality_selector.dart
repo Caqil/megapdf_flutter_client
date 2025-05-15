@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
+import 'package:megapdf_flutter_client/core/theme/app_theme.dart';
 
 class QualitySelector extends StatelessWidget {
   final int quality;

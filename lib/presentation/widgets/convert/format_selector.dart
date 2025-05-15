@@ -21,7 +21,7 @@ class FormatSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     if (horizontal) {
       return SizedBox(
-        height: 100,
+        height: 110,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: formats.length,
@@ -75,8 +75,8 @@ class _FormatItem extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          width: 80,
-          height: 90,
+          width: 90,
+          height: 100,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
@@ -105,6 +105,17 @@ class _FormatItem extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 4),
+              Text(
+                _getFormatName(format),
+                style: TextStyle(
+                  fontSize: 10,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary.withOpacity(0.8)
+                      : theme.colorScheme.onSurface.withOpacity(0.6),
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -119,10 +130,6 @@ class _FormatItem extends StatelessWidget {
       case 'pdf':
         icon = Icons.picture_as_pdf;
         break;
-      case 'docx':
-      case 'doc':
-        icon = Icons.description;
-        break;
       case 'jpg':
       case 'jpeg':
         icon = Icons.image;
@@ -130,8 +137,26 @@ class _FormatItem extends StatelessWidget {
       case 'png':
         icon = Icons.image;
         break;
+      case 'tiff':
+        icon = Icons.image;
+        break;
+      case 'docx':
+      case 'doc':
+        icon = Icons.description;
+        break;
+      case 'xlsx':
+      case 'xls':
+        icon = Icons.table_chart;
+        break;
+      case 'pptx':
+      case 'ppt':
+        icon = Icons.slideshow;
+        break;
       case 'txt':
         icon = Icons.text_snippet;
+        break;
+      case 'rtf':
+        icon = Icons.text_format;
         break;
       case 'html':
         icon = Icons.code;
@@ -147,110 +172,37 @@ class _FormatItem extends StatelessWidget {
       color: color,
     );
   }
-}
 
-// A more compact format selector for use in smaller spaces
-class CompactFormatSelector extends StatelessWidget {
-  final String selectedFormat;
-  final List<String> formats;
-  final Function(String) onFormatChanged;
-
-  const CompactFormatSelector({
-    super.key,
-    required this.selectedFormat,
-    required this.formats,
-    required this.onFormatChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: selectedFormat,
-          isDense: true,
-          icon: const Icon(Icons.arrow_drop_down),
-          elevation: 16,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
-            fontWeight: FontWeight.bold,
-          ),
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              onFormatChanged(newValue);
-            }
-          },
-          items: formats.map<DropdownMenuItem<String>>((String format) {
-            return DropdownMenuItem<String>(
-              value: format,
-              child: Row(
-                children: [
-                  _buildFormatIcon(format),
-                  const SizedBox(width: 8),
-                  Text(format.toUpperCase()),
-                ],
-              ),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFormatIcon(String format) {
-    final IconData icon;
-    final Color color;
-
+  String _getFormatName(String format) {
     switch (format.toLowerCase()) {
       case 'pdf':
-        icon = Icons.picture_as_pdf;
-        color = Colors.red;
-        break;
-      case 'docx':
-      case 'doc':
-        icon = Icons.description;
-        color = Colors.blue;
-        break;
+        return 'Document';
       case 'jpg':
       case 'jpeg':
-        icon = Icons.image;
-        color = Colors.purple;
-        break;
+        return 'JPEG Image';
       case 'png':
-        icon = Icons.image;
-        color = Colors.indigo;
-        break;
+        return 'PNG Image';
+      case 'tiff':
+        return 'TIFF Image';
+      case 'docx':
+        return 'Word Doc';
+      case 'xlsx':
+        return 'Excel Sheet';
+      case 'pptx':
+        return 'PowerPoint';
       case 'txt':
-        icon = Icons.text_snippet;
-        color = Colors.grey;
-        break;
+        return 'Plain Text';
+      case 'rtf':
+        return 'Rich Text';
       case 'html':
-        icon = Icons.code;
-        color = Colors.orange;
-        break;
+        return 'Web Page';
       default:
-        icon = Icons.insert_drive_file;
-        color = Colors.grey;
-        break;
+        return format.toUpperCase();
     }
-
-    return Icon(
-      icon,
-      size: 20,
-      color: color,
-    );
   }
 }
 
-// A format selector that shows feature comparison
+// An alternative format selector with more information
 class FormatComparisonSelector extends StatelessWidget {
   final String selectedFormat;
   final List<String> formats;
@@ -368,39 +320,61 @@ class _FormatComparisonItem extends StatelessWidget {
   }
 
   Widget _buildFormatIcon(String format) {
+    final Color backgroundColor;
+    final Color textColor;
     final IconData icon;
-    final Color color;
 
     switch (format.toLowerCase()) {
       case 'pdf':
+        backgroundColor = Colors.red.shade100;
+        textColor = Colors.red.shade800;
         icon = Icons.picture_as_pdf;
-        color = Colors.red;
-        break;
-      case 'docx':
-      case 'doc':
-        icon = Icons.description;
-        color = Colors.blue;
         break;
       case 'jpg':
       case 'jpeg':
-        icon = Icons.image;
-        color = Colors.purple;
-        break;
       case 'png':
+      case 'tiff':
+        backgroundColor = Colors.blue.shade100;
+        textColor = Colors.blue.shade800;
         icon = Icons.image;
-        color = Colors.indigo;
+        break;
+      case 'docx':
+      case 'doc':
+        backgroundColor = Colors.blue.shade100;
+        textColor = Colors.blue.shade800;
+        icon = Icons.description;
+        break;
+      case 'xlsx':
+      case 'xls':
+        backgroundColor = Colors.green.shade100;
+        textColor = Colors.green.shade800;
+        icon = Icons.table_chart;
+        break;
+      case 'pptx':
+      case 'ppt':
+        backgroundColor = Colors.orange.shade100;
+        textColor = Colors.orange.shade800;
+        icon = Icons.slideshow;
         break;
       case 'txt':
+        backgroundColor = Colors.grey.shade100;
+        textColor = Colors.grey.shade800;
         icon = Icons.text_snippet;
-        color = Colors.grey;
+        break;
+      case 'rtf':
+        backgroundColor = Colors.purple.shade100;
+        textColor = Colors.purple.shade800;
+        icon = Icons.text_format;
         break;
       case 'html':
+        backgroundColor = Colors.cyan.shade100;
+        textColor = Colors.cyan.shade800;
         icon = Icons.code;
-        color = Colors.orange;
         break;
       default:
+        backgroundColor = Colors.grey.shade100;
+        textColor = Colors.grey.shade800;
         icon = Icons.insert_drive_file;
-        color = Colors.grey;
         break;
     }
 
@@ -408,14 +382,14 @@ class _FormatComparisonItem extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
         child: Icon(
           icon,
           size: 24,
-          color: color,
+          color: textColor,
         ),
       ),
     );
@@ -425,15 +399,23 @@ class _FormatComparisonItem extends StatelessWidget {
     switch (format.toLowerCase()) {
       case 'pdf':
         return 'PDF Document';
-      case 'docx':
-        return 'Word Document';
       case 'jpg':
       case 'jpeg':
         return 'JPEG Image';
       case 'png':
         return 'PNG Image';
+      case 'tiff':
+        return 'TIFF Image';
+      case 'docx':
+        return 'Word Document';
+      case 'xlsx':
+        return 'Excel Spreadsheet';
+      case 'pptx':
+        return 'PowerPoint Presentation';
       case 'txt':
         return 'Plain Text';
+      case 'rtf':
+        return 'Rich Text Format';
       case 'html':
         return 'HTML Webpage';
       default:
@@ -445,15 +427,23 @@ class _FormatComparisonItem extends StatelessWidget {
     switch (format.toLowerCase()) {
       case 'pdf':
         return 'Portable Document Format, preserves layout and formatting';
-      case 'docx':
-        return 'Editable Microsoft Word document with text formatting';
       case 'jpg':
       case 'jpeg':
         return 'Compressed image format, suitable for photos';
       case 'png':
         return 'High-quality image format with transparency support';
+      case 'tiff':
+        return 'Professional image format often used in publishing';
+      case 'docx':
+        return 'Editable Microsoft Word document with text formatting';
+      case 'xlsx':
+        return 'Microsoft Excel spreadsheet with data and formulas';
+      case 'pptx':
+        return 'Microsoft PowerPoint presentation with slides';
       case 'txt':
         return 'Simple text file without formatting';
+      case 'rtf':
+        return 'Rich Text Format with basic text formatting';
       case 'html':
         return 'Web page format viewable in browsers';
       default:

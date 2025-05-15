@@ -3,12 +3,12 @@
 class RouteNames {
   // Auth routes
   static const String splash = 'splash';
-  
+
   // Main app routes
   static const String home = 'home';
   static const String settings = 'settings';
   static const String apiKeys = 'api-keys';
-  
+
   // PDF operations routes
   static const String compress = 'compress';
   static const String convert = 'convert';
@@ -23,17 +23,23 @@ class RouteNames {
   static const String pageNumbers = 'page-numbers';
   static const String sign = 'sign';
   static const String ocr = 'ocr';
-  
+
+  // Specific conversions
+  static const String pdfToImage = 'pdf-to-image';
+  static const String pdfToOffice = 'pdf-to-office';
+  static const String imageToPdf = 'image-to-pdf';
+  static const String officeToPdf = 'office-to-pdf';
+
   // Result routes
   static const String result = 'result';
   static const String fileViewer = 'file-viewer';
-  
+
   // Path strings
   static const String splashPath = '/';
-  
+
   static const String homePath = '/home';
   static const String settingsPath = '/settings';
-  
+
   static const String compressPath = '/compress';
   static const String convertPath = '/convert';
   static const String mergePath = '/merge';
@@ -47,7 +53,8 @@ class RouteNames {
   static const String pageNumbersPath = '/page-numbers';
   static const String signPath = '/sign';
   static const String ocrPath = '/ocr';
-  
+
+  // Result paths
   static const String resultPath = '/result';
   static const String fileViewerPath = '/file-viewer';
 }

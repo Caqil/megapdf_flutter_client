@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
-import 'package:megapdf_flutter_client/core/error/app_error.dart';
 import 'package:megapdf_flutter_client/core/error/error_handler.dart';
 import 'package:megapdf_flutter_client/core/utils/file_utils.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
 import 'package:path/path.dart' as path;
+import 'package:megapdf_flutter_client/core/theme/app_theme.dart';
 
 class DownloadCard extends StatefulWidget {
   final String fileName;

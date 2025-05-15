@@ -14,8 +14,18 @@ import 'package:megapdf_flutter_client/presentation/widgets/common/file_picker_b
 import 'package:megapdf_flutter_client/presentation/widgets/convert/format_selector.dart';
 import 'package:megapdf_flutter_client/providers/convert_provider.dart';
 
+// Enum to represent different conversion types
+enum ConversionType {
+  imageToPdf,
+  officeToPdf,
+  pdfToImage,
+  pdfToOffice,
+}
+
 class ConvertScreen extends ConsumerStatefulWidget {
-  const ConvertScreen({super.key});
+  final Map<String, dynamic>? params;
+
+  const ConvertScreen({super.key, this.params});
 
   @override
   ConsumerState<ConvertScreen> createState() => _ConvertScreenState();
@@ -23,64 +33,97 @@ class ConvertScreen extends ConsumerStatefulWidget {
 
 class _ConvertScreenState extends ConsumerState<ConvertScreen> {
   PdfFile? _selectedFile;
-  String _targetFormat = AppConstants.defaultConversionFormat;
+  String _outputFormat = '';
   bool _isConverting = false;
+  int _currentStep = 0;
 
-  final List<String> _pdfToOtherFormats = ['docx', 'jpg', 'png', 'txt', 'html'];
+  // Default conversion type
+  ConversionType _conversionType = ConversionType.pdfToImage;
 
-  final List<String> _otherToPdfFormats = ['pdf'];
+  // Format options for each conversion type
+  final Map<ConversionType, List<String>> _formatOptions = {
+    ConversionType.pdfToImage: ['jpg', 'png', 'tiff'],
+    ConversionType.pdfToOffice: ['docx', 'xlsx', 'pptx', 'txt'],
+    ConversionType.imageToPdf: ['pdf'],
+    ConversionType.officeToPdf: ['pdf'],
+  };
+
+  // Input extensions for each conversion type
+  final Map<ConversionType, List<String>> _inputExtensions = {
+    ConversionType.pdfToImage: AppConstants.pdfExtensions,
+    ConversionType.pdfToOffice: AppConstants.pdfExtensions,
+    ConversionType.imageToPdf: AppConstants.imageExtensions,
+    ConversionType.officeToPdf: [
+      ...AppConstants.documentExtensions,
+      ...AppConstants.spreadsheetExtensions,
+      ...AppConstants.presentationExtensions,
+    ],
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _determineConversionType();
+    _setDefaultOutputFormat();
+  }
+
+  void _determineConversionType() {
+    if (widget.params != null && widget.params!.containsKey('type')) {
+      final type = widget.params!['type'];
+
+      switch (type) {
+        case 'image_to_pdf':
+          _conversionType = ConversionType.imageToPdf;
+          break;
+        case 'office_to_pdf':
+          _conversionType = ConversionType.officeToPdf;
+          break;
+        case 'pdf_to_image':
+        case 'pdf_to_jpg':
+          _conversionType = ConversionType.pdfToImage;
+          break;
+        case 'pdf_to_office':
+          _conversionType = ConversionType.pdfToOffice;
+          break;
+      }
+    }
+  }
+
+  void _setDefaultOutputFormat() {
+    // Set default output format based on conversion type
+    switch (_conversionType) {
+      case ConversionType.pdfToImage:
+        _outputFormat = 'jpg';
+        break;
+      case ConversionType.pdfToOffice:
+        _outputFormat = 'docx';
+        break;
+      case ConversionType.imageToPdf:
+      case ConversionType.officeToPdf:
+        _outputFormat = 'pdf';
+        break;
+    }
+  }
 
   void _selectFile(PdfFile file) {
     setState(() {
       _selectedFile = file;
-
-      // If the file is not a PDF, automatically set the target format to PDF
-      if (!file.isPdf) {
-        _targetFormat = 'pdf';
-      }
+      _currentStep = 1;
     });
   }
 
-  void _updateFormat(String format) {
+  void _updateOutputFormat(String format) {
     setState(() {
-      _targetFormat = format;
+      _outputFormat = format;
     });
   }
 
   void _resetForm() {
     setState(() {
       _selectedFile = null;
-      _targetFormat = AppConstants.defaultConversionFormat;
+      _currentStep = 0;
+      _setDefaultOutputFormat();
     });
-  }
-
-  // Get allowed file extensions based on conversion direction
-  List<String> _getAllowedExtensions() {
-    // If converting to PDF, accept document, image, and spreadsheet formats
-    if (_targetFormat == 'pdf') {
-      return [
-        ...AppConstants.documentExtensions,
-        ...AppConstants.imageExtensions,
-        ...AppConstants.spreadsheetExtensions,
-        ...AppConstants.presentationExtensions,
-      ];
-    } else {
-      // If converting from PDF to other format, accept only PDFs
-      return AppConstants.pdfExtensions;
-    }
-  }
-
-  // Get list of target formats based on selected file
-  List<String> _getTargetFormats() {
-    if (_selectedFile == null) {
-      return _pdfToOtherFormats;
-    }
-
-    if (_selectedFile!.isPdf) {
-      return _pdfToOtherFormats;
-    } else {
-      return _otherToPdfFormats;
-    }
   }
 
   Future<void> _convertFile() async {
@@ -102,7 +145,7 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
     try {
       final result = await ref.read(convertProvider.notifier).convertFile(
             file: _selectedFile!,
-            outputFormat: _targetFormat,
+            outputFormat: _outputFormat,
           );
 
       if (!mounted) return;
@@ -134,94 +177,193 @@ class _ConvertScreenState extends ConsumerState<ConvertScreen> {
     }
   }
 
+  String _getTitle() {
+    switch (_conversionType) {
+      case ConversionType.pdfToImage:
+        return 'PDF to Image';
+      case ConversionType.pdfToOffice:
+        return 'PDF to Office';
+      case ConversionType.imageToPdf:
+        return 'Image to PDF';
+      case ConversionType.officeToPdf:
+        return 'Office to PDF';
+    }
+  }
+
+  String _getDescription() {
+    switch (_conversionType) {
+      case ConversionType.pdfToImage:
+        return 'Convert your PDF documents to image formats.';
+      case ConversionType.pdfToOffice:
+        return 'Convert PDF documents to editable Office formats.';
+      case ConversionType.imageToPdf:
+        return 'Convert images to PDF format for better sharing.';
+      case ConversionType.officeToPdf:
+        return 'Convert Office documents to PDF format.';
+    }
+  }
+
+  String _getSelectPrompt() {
+    switch (_conversionType) {
+      case ConversionType.pdfToImage:
+      case ConversionType.pdfToOffice:
+        return 'Select a PDF file to convert';
+      case ConversionType.imageToPdf:
+        return 'Select an image file to convert';
+      case ConversionType.officeToPdf:
+        return 'Select an Office document to convert';
+    }
+  }
+
+  String _getButtonText() {
+    switch (_conversionType) {
+      case ConversionType.pdfToImage:
+        return 'Select PDF';
+      case ConversionType.pdfToOffice:
+        return 'Select PDF';
+      case ConversionType.imageToPdf:
+        return 'Select Image';
+      case ConversionType.officeToPdf:
+        return 'Select Document';
+    }
+  }
+
+  IconData _getButtonIcon() {
+    switch (_conversionType) {
+      case ConversionType.pdfToImage:
+      case ConversionType.pdfToOffice:
+        return Icons.picture_as_pdf;
+      case ConversionType.imageToPdf:
+        return Icons.image;
+      case ConversionType.officeToPdf:
+        return Icons.description;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final targetFormats = _getTargetFormats();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Convert Files'),
+        title: Text(_getTitle()),
       ),
       body: AppLoadingOverlay(
         isLoading: _isConverting,
         message: 'Converting file...',
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header and info
-              Text(
-                'Convert between formats',
-                style: theme.textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Convert PDF documents to other formats or convert various file types to PDF.',
-                style: theme.textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 24),
-
-              // File selection area
-              if (_selectedFile == null) ...[
-                DragDropFileUpload(
-                  onFilePicked: _selectFile,
-                  allowedExtensions: _getAllowedExtensions(),
-                  prompt: 'Select or drop a file',
-                  dropHint:
-                      'Supports various formats including PDF, DOCX, JPG, PNG, and more',
-                  fullWidth: true,
+        child: Stepper(
+          currentStep: _currentStep,
+          controlsBuilder: (context, details) {
+            return const SizedBox.shrink(); // Hide default controls
+          },
+          steps: [
+            // Step 1: Select file
+            Step(
+              title: const Text('Select File'),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _getTitle(),
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _getDescription(),
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 24),
+                    if (_selectedFile == null) ...[
+                      DragDropFileUpload(
+                        onFilePicked: _selectFile,
+                        allowedExtensions:
+                            _inputExtensions[_conversionType] ?? [],
+                        prompt: _getSelectPrompt(),
+                        dropHint: 'or click to select',
+                        fullWidth: true,
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: FilePickerButton(
+                          onFilePicked: _selectFile,
+                          allowedExtensions:
+                              _inputExtensions[_conversionType] ?? [],
+                          buttonText: _getButtonText(),
+                          icon: _getButtonIcon(),
+                        ),
+                      ),
+                    ] else ...[
+                      _SelectedFileCard(
+                        file: _selectedFile!,
+                        onRemove: _resetForm,
+                      ),
+                      const SizedBox(height: 16),
+                      AppButton(
+                        label: 'Continue',
+                        onPressed: () => setState(() => _currentStep = 1),
+                        type: AppButtonType.primary,
+                        fullWidth: true,
+                      ),
+                    ],
+                  ],
                 ),
-                const SizedBox(height: 16),
-                Center(
-                  child: FilePickerButton(
-                    onFilePicked: _selectFile,
-                    allowedExtensions: _getAllowedExtensions(),
-                    buttonText: 'Select File',
-                    icon: Icons.upload_file,
+              ),
+              isActive: _currentStep >= 0,
+              state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+            ),
+
+            // Step 2: Choose output format
+            Step(
+              title: const Text('Choose Format'),
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Output Format',
+                    style: theme.textTheme.titleMedium,
                   ),
-                ),
-              ] else ...[
-                _SelectedFileCard(
-                  file: _selectedFile!,
-                  onRemove: _resetForm,
-                ),
-                const SizedBox(height: 24),
-
-                // Format selection
-                Text(
-                  'Output Format',
-                  style: theme.textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Select the format you want to convert your file to.',
-                  style: theme.textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 16),
-
-                FormatSelector(
-                  selectedFormat: _targetFormat,
-                  formats: targetFormats,
-                  onFormatChanged: _updateFormat,
-                ),
-                const SizedBox(height: 24),
-
-                // Convert button
-                AppButton(
-                  label: 'Convert File',
-                  onPressed: _convertFile,
-                  isLoading: _isConverting,
-                  isDisabled: _isConverting,
-                  type: AppButtonType.primary,
-                  size: AppButtonSize.large,
-                  icon: Icons.transform,
-                  fullWidth: true,
-                ),
-              ],
-            ],
-          ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Select the format you want to convert your file to.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  FormatSelector(
+                    selectedFormat: _outputFormat,
+                    formats: _formatOptions[_conversionType] ?? ['pdf'],
+                    onFormatChanged: _updateOutputFormat,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AppButton(
+                          label: 'Back',
+                          onPressed: () => setState(() => _currentStep = 0),
+                          type: AppButtonType.outline,
+                          fullWidth: true,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: AppButton(
+                          label: 'Convert',
+                          onPressed: _convertFile,
+                          isLoading: _isConverting,
+                          isDisabled: _isConverting,
+                          type: AppButtonType.primary,
+                          fullWidth: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              isActive: _currentStep >= 1,
+              state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+            ),
+          ],
         ),
       ),
     );

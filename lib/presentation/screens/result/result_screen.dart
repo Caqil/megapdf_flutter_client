@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:megapdf_flutter_client/core/constants/app_constants.dart';
-import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
 import 'package:megapdf_flutter_client/core/error/error_handler.dart';
 import 'package:megapdf_flutter_client/core/utils/file_utils.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
@@ -13,6 +12,7 @@ import 'package:megapdf_flutter_client/core/widgets/app_loading.dart';
 import 'package:megapdf_flutter_client/presentation/router/route_names.dart';
 import 'package:megapdf_flutter_client/presentation/widgets/result/download_card.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:megapdf_flutter_client/core/theme/app_theme.dart';
 
 class ResultScreen extends ConsumerStatefulWidget {
   final String operation;

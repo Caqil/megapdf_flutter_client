@@ -2,15 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:go_router/go_router.dart';
-import 'package:megapdf_flutter_client/core/constants/app_constants.dart';
-import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
 import 'package:megapdf_flutter_client/core/error/error_handler.dart';
 import 'package:megapdf_flutter_client/core/utils/file_utils.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_loading.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:megapdf_flutter_client/core/theme/app_theme.dart';
 class FileViewerScreen extends StatefulWidget {
   final String fileUrl;
   final String fileName;

@@ -57,7 +57,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RouteNames.convertPath,
         name: RouteNames.convert,
-        builder: (context, state) => const ConvertScreen(),
+        builder: (context, state) {
+          final Map<String, dynamic>? params =
+              state.extra as Map<String, dynamic>?;
+          return ConvertScreen(params: params);
+        },
       ),
       GoRoute(
         path: RouteNames.mergePath,
@@ -84,6 +88,36 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.sign,
         builder: (context, state) => const SignScreen(),
       ),
+      GoRoute(
+        path: RouteNames.ocrPath,
+        name: RouteNames.ocr,
+        builder: (context, state) => const OcrScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.unlockPath,
+        name: RouteNames.unlock,
+        builder: (context, state) => const UnlockScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.rotatePath,
+        name: RouteNames.rotate,
+        builder: (context, state) => const RotateScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.watermarkPath,
+        name: RouteNames.watermark,
+        builder: (context, state) => const WatermarkScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.removePagePath,
+        name: RouteNames.removePage,
+        builder: (context, state) => const RemovePageScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.pageNumbersPath,
+        name: RouteNames.pageNumbers,
+        builder: (context, state) => const PageNumbersScreen(),
+      ),
 
       // Result routes
       GoRoute(
@@ -109,6 +143,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           return FileViewerScreen(
             fileUrl: extra['fileUrl'] ?? '',
             fileName: extra['fileName'] ?? '',
+            localFilePath: extra['localFilePath'],
           );
         },
       ),
@@ -192,83 +227,38 @@ class ErrorScreen extends StatelessWidget {
   }
 }
 
-// Additional screens need to be implemented
-class ForgotPasswordScreen extends StatelessWidget {
-  const ForgotPasswordScreen({super.key});
+// OCR Screen
+class OcrScreen extends StatelessWidget {
+  const OcrScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Forgot Password')),
-      body: const Center(child: Text('Forgot Password Screen')),
+      appBar: AppBar(title: const Text('Recognize Text (OCR)')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.document_scanner,
+              size: 80,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+            const SizedBox(height: 24),
+            const Text('OCR Screen - Coming Soon'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class ResetPasswordScreen extends StatelessWidget {
-  final String token;
-
-  const ResetPasswordScreen({super.key, required this.token});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
-      body: Center(child: Text('Reset Password Screen with token: $token')),
-    );
-  }
-}
-
-class VerifyEmailScreen extends StatelessWidget {
-  final String token;
-
-  const VerifyEmailScreen({super.key, required this.token});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Verify Email')),
-      body: Center(child: Text('Verify Email Screen with token: $token')),
-    );
-  }
-}
-
-class ApiKeysScreen extends StatelessWidget {
-  const ApiKeysScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('API Keys')),
-      body: const Center(child: Text('API Keys Screen')),
-    );
-  }
-}
-
-class BalanceScreen extends StatelessWidget {
-  const BalanceScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Balance')),
-      body: const Center(child: Text('Balance Screen')),
-    );
-  }
-}
-
-class DepositFundsScreen extends StatelessWidget {
-  const DepositFundsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Deposit Funds')),
-      body: const Center(child: Text('Deposit Funds Screen')),
-    );
-  }
-}
-
+// Placeholder screens for other features
 class UnlockScreen extends StatelessWidget {
   const UnlockScreen({super.key});
 
@@ -276,7 +266,25 @@ class UnlockScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Unlock PDF')),
-      body: const Center(child: Text('Unlock PDF Screen')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.lock_open,
+              size: 80,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+            const SizedBox(height: 24),
+            const Text('Unlock PDF Screen - Coming Soon'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -287,8 +295,26 @@ class RotateScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rotate PDF')),
-      body: const Center(child: Text('Rotate PDF Screen')),
+      appBar: AppBar(title: const Text('Organize PDF')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.filter,
+              size: 80,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+            const SizedBox(height: 24),
+            const Text('Organize PDF Screen - Coming Soon'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -300,7 +326,25 @@ class WatermarkScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Add Watermark')),
-      body: const Center(child: Text('Add Watermark Screen')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.branding_watermark,
+              size: 80,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+            const SizedBox(height: 24),
+            const Text('Watermark Screen - Coming Soon'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -312,7 +356,25 @@ class RemovePageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Remove Pages')),
-      body: const Center(child: Text('Remove Pages Screen')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.delete_outline,
+              size: 80,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+            const SizedBox(height: 24),
+            const Text('Remove Pages Screen - Coming Soon'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -324,19 +386,25 @@ class PageNumbersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Add Page Numbers')),
-      body: const Center(child: Text('Add Page Numbers Screen')),
-    );
-  }
-}
-
-class OcrScreen extends StatelessWidget {
-  const OcrScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('OCR')),
-      body: const Center(child: Text('OCR Screen')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.format_list_numbered,
+              size: 80,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+            const SizedBox(height: 24),
+            const Text('Page Numbers Screen - Coming Soon'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

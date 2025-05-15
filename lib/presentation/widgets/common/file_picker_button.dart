@@ -3,6 +3,7 @@ import 'package:megapdf_flutter_client/core/constants/app_constants.dart';
 import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
 import 'package:megapdf_flutter_client/core/error/app_error.dart';
 import 'package:megapdf_flutter_client/core/error/error_handler.dart';
+import 'package:megapdf_flutter_client/core/theme/app_theme.dart';
 import 'package:megapdf_flutter_client/core/utils/file_utils.dart';
 import 'package:megapdf_flutter_client/core/utils/permissions_helper.dart';
 import 'package:megapdf_flutter_client/core/widgets/app_button.dart';
