@@ -4,6 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:megapdf_flutter_client/presentation/router/route_names.dart';
+import 'package:megapdf_flutter_client/presentation/screens/result/result_screen.dart';
+
+import '../screens/compress/compress_screen.dart';
+import '../screens/convert/convert_screen.dart';
+import '../screens/home/home_screen.dart';
+import '../screens/merge/merge_screen.dart';
+import '../screens/protect/protect_screen.dart';
+import '../screens/repair/repair_screen.dart';
+import '../screens/sign/sign_screen.dart';
+import '../screens/split/split_screen.dart';
 
 // Provider for the router
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -52,16 +62,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.splash,
         builder: (context, state) => const SplashScreen(),
       ),
-      GoRoute(
-        path: RouteNames.loginPath,
-        name: RouteNames.login,
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.registerPath,
-        name: RouteNames.register,
-        builder: (context, state) => const RegisterScreen(),
-      ),
+     
       GoRoute(
         path: RouteNames.forgotPasswordPath,
         name: RouteNames.forgotPassword,
@@ -90,11 +91,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: RouteNames.home,
         builder: (context, state) => const HomeScreen(),
       ),
-      GoRoute(
-        path: RouteNames.profilePath,
-        name: RouteNames.profile,
-        builder: (context, state) => const ProfileScreen(),
-      ),
+  
       GoRoute(
         path: RouteNames.settingsPath,
         name: RouteNames.settings,

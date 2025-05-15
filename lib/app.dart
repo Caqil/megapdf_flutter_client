@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pdf_tools/core/constants/theme_constants.dart';
-import 'package:pdf_tools/presentation/router/app_router.dart';
+import 'package:megapdf_flutter_client/core/constants/theme_constants.dart';
+import 'package:megapdf_flutter_client/presentation/router/app_router.dart';
 
 class PDFToolsApp extends ConsumerWidget {
   const PDFToolsApp({super.key});

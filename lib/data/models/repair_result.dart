@@ -2,7 +2,7 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pdf_tools/data/models/api_response.dart';
+import 'package:megapdf_flutter_client/data/models/api_response.dart';
 
 part 'repair_result.g.dart';
 
