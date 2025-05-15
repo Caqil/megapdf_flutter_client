@@ -23,10 +23,10 @@ class ApiClient {
         responseType: ResponseType.json,
         headers: {
           ApiConstants.accept: ApiConstants.applicationJson,
+          'x-api-key': ApiConstants.apiKey,
         },
       ),
     );
-
 
     // Add logging interceptor only in debug mode
     if (kDebugMode) {

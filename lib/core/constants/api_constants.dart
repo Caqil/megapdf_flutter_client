@@ -7,7 +7,8 @@ class ApiConstants {
   static String get baseUrl =>
       dotenv.env['API_BASE_URL'] ?? 'https://megapdf.com';
   static String get apiUrl => '$baseUrl/api';
-
+  static const String apiKey =
+      "sk_53e7d4716d971f09955b56ef33ac1a0f8b6d2bb8076d0fbb";
   // Endpoints
   static const String login = '/auth/login';
   static const String register = '/auth/register';
@@ -68,7 +69,6 @@ class ApiConstants {
   // Headers
   static const String contentType = 'Content-Type';
   static const String accept = 'Accept';
-  static const String apiKey = 'x-api-key';
 
   // Content Types
   static const String applicationJson = 'application/json';

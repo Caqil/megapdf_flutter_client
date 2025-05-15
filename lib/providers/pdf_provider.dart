@@ -8,7 +8,6 @@ import 'package:megapdf_flutter_client/data/models/api_response.dart';
 import 'package:megapdf_flutter_client/data/models/pdf_file.dart';
 import 'package:megapdf_flutter_client/data/repositories/pdf_repository.dart';
 import 'package:megapdf_flutter_client/data/services/file_service.dart';
-import 'package:megapdf_flutter_client/providers/file_service_provider.dart';
 
 // Main PDF state
 class PdfState {
@@ -232,9 +231,6 @@ class ApiServiceImpl implements ApiService {
   final ApiClient _apiClient;
 
   ApiServiceImpl({required ApiClient apiClient}) : _apiClient = apiClient;
-
-  // Implement all ApiService methods...
-  // For brevity, I'm not implementing all methods as they would follow a similar pattern
 
   @override
   Future<ApiResponse<dynamic>> getPdfInfo({required File file}) async {

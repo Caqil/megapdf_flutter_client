@@ -24,49 +24,20 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top row of buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _TopButton(label: 'All', isSelected: true),
-                _TopButton(label: 'Organize', isSelected: false),
-                _TopButton(label: 'Optimize', isSelected: false),
-                _TopButton(label: 'Convert', isSelected: false),
-              ],
-            ),
-            const SizedBox(height: 16),
             Text(
               'PDF Operations',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
             const _OperationsGrid(),
+            const SizedBox(height: 32),
+            Text(
+              'Recent Operations',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+            const _RecentOperations(),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TopButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-
-  const _TopButton({required this.label, required this.isSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.red : Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.black,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -79,97 +50,59 @@ class _OperationsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisCount: 3, // Updated to 3 columns as per the image
+      crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
-      childAspectRatio: 1, // Make the cards more square
       children: [
-        _OperationCard(
-          title: 'IMG to PDF',
-          icon: Icons.image_outlined,
-          color: Colors.red,
-          onTap: () =>
-              context.push(RouteNames.convertPath), // Update path as needed
-        ),
-        _OperationCard(
-          title: 'Office to PDF',
-          icon: Icons.description_outlined,
-          color: Colors.blue,
-          onTap: () => context.push(RouteNames.convertPath),
-        ),
         _OperationCard(
           title: 'Compress PDF',
           icon: Icons.compress,
-          color: Colors.green,
+          color: AppColors.primary,
           onTap: () => context.push(RouteNames.compressPath),
         ),
         _OperationCard(
-          title: 'Merge PDF',
-          icon: Icons.merge_type,
-          color: Colors.purple,
-          onTap: () => context.push(RouteNames.mergePath),
+          title: 'Convert PDF',
+          icon: Icons.transform,
+          color: AppColors.secondary,
+          onTap: () => context.push(RouteNames.convertPath),
         ),
         _OperationCard(
-          title: 'PDF to JPG',
-          icon: Icons.image_outlined,
-          color: Colors.orange,
-          onTap: () => context.push(RouteNames.convertPath),
+          title: 'Merge PDFs',
+          icon: Icons.merge_type,
+          color: Colors.green,
+          onTap: () => context.push(RouteNames.mergePath),
         ),
         _OperationCard(
           title: 'Split PDF',
           icon: Icons.call_split,
-          color: Colors.teal,
+          color: Colors.orange,
           onTap: () => context.push(RouteNames.splitPath),
-        ),
-        _OperationCard(
-          title: 'Recognize Text (OCR)',
-          icon: Icons.text_fields,
-          color: Colors.indigo,
-          onTap: () => context.push(RouteNames.convertPath),
-        ),
-        _OperationCard(
-          title: 'Annotate PDF',
-          icon: Icons.edit_outlined,
-          color: Colors.pink,
-          onTap: () => context.push(RouteNames.signPath),
-        ),
-        _OperationCard(
-          title: 'Organize PDF',
-          icon: Icons.sort,
-          color: Colors.cyan,
-          onTap: () => context.push(RouteNames.mergePath),
-        ),
-        _OperationCard(
-          title: 'Unlock PDF',
-          icon: Icons.lock_open,
-          color: Colors.redAccent,
-          onTap: () => context.push(RouteNames.unlockPath),
-        ),
-        _OperationCard(
-          title: 'Sign PDF',
-          icon: Icons.draw,
-          color: Colors.blueAccent,
-          onTap: () => context.push(RouteNames.signPath),
-        ),
-        _OperationCard(
-          title: 'Watermark PDF',
-          icon: Icons.water_drop_outlined,
-          color: Colors.grey,
-          onTap: () => context.push(RouteNames.protectPath),
-        ),
-        _OperationCard(
-          title: 'Rotate PDF',
-          icon: Icons.rotate_right,
-          color: Colors.amber,
-          onTap: () => context.push(RouteNames.rotatePath),
         ),
         _OperationCard(
           title: 'Protect PDF',
           icon: Icons.lock_outline,
-          color: Colors.greenAccent,
+          color: Colors.purple,
           onTap: () => context.push(RouteNames.protectPath),
+        ),
+        _OperationCard(
+          title: 'Unlock PDF',
+          icon: Icons.lock_open,
+          color: Colors.teal,
+          onTap: () => context.push(RouteNames.unlockPath),
+        ),
+        _OperationCard(
+          title: 'Repair PDF',
+          icon: Icons.build,
+          color: Colors.red,
+          onTap: () => context.push(RouteNames.repairPath),
+        ),
+        _OperationCard(
+          title: 'Sign PDF',
+          icon: Icons.draw,
+          color: Colors.blue,
+          onTap: () => context.push(RouteNames.signPath),
         ),
       ],
     );
@@ -194,33 +127,63 @@ class _OperationCard extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12), // Slightly smaller radius
+        borderRadius: BorderRadius.circular(16),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: color,
-                size: 24, // Smaller icon size to match the image
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 32,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
                 title,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 12, // Smaller font size
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RecentOperations extends StatelessWidget {
+  const _RecentOperations();
+
+  @override
+  Widget build(BuildContext context) {
+    // This would normally fetch from a provider or service
+    // For now, we'll use a placeholder
+    return Container(
+      width: double.infinity,
+      height: 150,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+        ),
+      ),
+      child: const Center(
+        child: Text("You don't have any recent operations"),
       ),
     );
   }
